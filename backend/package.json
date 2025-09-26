@@ -1,0 +1,25 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "backend of link sanctuary",
+  "license": "ISC",
+  "author": "shivain_sharma",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.5.2",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}
