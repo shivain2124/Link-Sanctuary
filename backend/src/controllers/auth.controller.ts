@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-// import bcrypt from 'bcrypt';
 import UserModel from "../models/user.model";
 import { connectDB } from "../config/db";
 import argon2 from "argon2";
+// import cookieParser from "cookie-parser";
+
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
 
 //registeration logic
@@ -35,13 +36,23 @@ export const loginController = async (req: Request, res: Response) => {
 
     const user = await UserModel.findOne({ username });
     if (!user) {
-      res.status(400).json({ message: "User doesnt exists" });
+      return res.status(400).json({ message: "User doesnt exists" });
     }
 
     const isValid = await verifyPassword(user.password, password);
-
     if (!isValid) res.status(401).json({ message: "Invalid Credentials" });
-    res.send(201).json({ message: "Logged in Successfully" });
+
+    // const accessToken = generateAccessToken(user._id.toString());
+    // const refreshToken = generateRefreshToken(user._id.toString());
+
+    // res.cookie("refreshToken", refreshToken, {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production",
+    //   sameSite: "strict",
+    //   maxAge: 7 * 24 * 3600 * 1000,
+    // });
+
+    res.status(201).json({ message: "Logged in Successfully" });
   } catch (err) {
     res.status(500).json({ error: "Login failed" });
   }
