@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import UserModel from "../models/user.model";
 import { connectDB } from "../config/db";
 import argon2 from "argon2";
@@ -24,7 +24,9 @@ export const registerController = async (req: Request, res: Response) => {
 
     res.status(201).json({ message: "User registered Successfully!" });
   } catch (error) {
-    res.status(500).json({ error: "Registration failed" });
+    res
+      .status(500)
+      .json({ error: "Internal server error while registering a user" });
   }
 };
 
