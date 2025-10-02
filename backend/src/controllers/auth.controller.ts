@@ -2,8 +2,6 @@ import { Request, Response } from "express";
 import UserModel from "../models/user.model";
 import { connectDB } from "../config/db";
 import argon2 from "argon2";
-// import cookieParser from "cookie-parser";
-
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
 
 //registeration logic
@@ -44,17 +42,17 @@ export const loginController = async (req: Request, res: Response) => {
     const isValid = await verifyPassword(user.password, password);
     if (!isValid) res.status(401).json({ message: "Invalid Credentials" });
 
-    // const accessToken = generateAccessToken(user._id.toString());
-    // const refreshToken = generateRefreshToken(user._id.toString());
+    const accessToken = generateAccessToken(user._id.toString());
+    const refreshToken = generateRefreshToken(user._id.toString());
 
-    // res.cookie("refreshToken", refreshToken, {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === "production",
-    //   sameSite: "strict",
-    //   maxAge: 7 * 24 * 3600 * 1000,
-    // });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 3600 * 1000,
+    });
 
-    res.status(201).json({ message: "Logged in Successfully" });
+    res.status(201).json({ message: "Logged in Successfully", accessToken });
   } catch (err) {
     res.status(500).json({ error: "Login failed" });
   }
