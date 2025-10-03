@@ -1,7 +1,10 @@
-import app from './app';
-import config from './config/config';
+import dotenv from "dotenv";
 
-app.listen(config.port,()=>{
-    console.log(`Server listening on port ${config.port}`);
+dotenv.config();
+
+import app from "./app";
+import config from "./config/config";
+
+app.listen(config.port, () => {
+  console.log(`Server listening on port ${config.port}`);
 });
-

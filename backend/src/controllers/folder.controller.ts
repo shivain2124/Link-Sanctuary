@@ -55,7 +55,7 @@ export const getRootFolders = async (req: Request, res: Response) => {
       name: 1,
     });
 
-    res.status(201).json({ success: true, data: folders });
+    res.status(200).json({ success: true, data: folders });
   } catch (err) {
     res.status(500).json({ err: "Failed to fetch root folders" });
   }

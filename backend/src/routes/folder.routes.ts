@@ -16,8 +16,8 @@ router.use(authenticateToken);
 router.use(requireAuthentication);
 
 router.post("/", validateData(CreateFolderSchema), CreateFolderController);
-router.get("/roots", getRootFolders);
+router.get("/root", getRootFolders);
 router.get("/:folderId/children", getChildFolders);
-router.post("/:folderId", deleteFolder);
+router.delete("/:folderId", deleteFolder);
 
 export default router;

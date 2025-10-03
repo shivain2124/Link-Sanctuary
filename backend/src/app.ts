@@ -11,6 +11,6 @@ app.use(cookieParser());
 connectDB();
 
 app.use("/api/auth", authRoutes);
-app.use("api/folders", folderRoutes);
+app.use("/api/folders", folderRoutes);
 
 export default app;
