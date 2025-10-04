@@ -9,4 +9,7 @@ const CreateFolderSchema = z.object({
   parentId: z.string().optional().nullable(),
 });
 
+type ICreateFolderScehma = z.infer<typeof CreateFolderSchema>;
+
+export type { ICreateFolderScehma };
 export { CreateFolderSchema };
