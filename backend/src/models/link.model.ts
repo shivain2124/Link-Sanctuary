@@ -13,6 +13,7 @@ const linkSchema = new Schema(
     },
     description: {
       type: String,
+      default: "",
     },
     folderId: {
       type: Schema.Types.ObjectId,
