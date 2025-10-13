@@ -85,5 +85,23 @@ export const updateLinks = async (req: Request, res: Response) => {
 
     const link = await LinkModel.findOne({ _id: linkId, userId });
     if (!link) return res.status(404).json({ message: "Link not found" });
-  } catch (err) {}
+
+    if (updates.title) {
+      const duplicate = await LinkModel.findOne({
+        title: updates.title,
+        folderId: link.folderId,
+        userId,
+        _id: { $ne: linkId },
+      });
+
+      if (duplicate)
+        return res.status(409).json({ message: "Name already taken" });
+    }
+    Object.assign(link, updates);
+    await link.save();
+
+    return res.status(200).json({ message: "Link updated!", link });
+  } catch (err) {
+    return res.status(500).json({ message: "Failed to update the link" });
+  }
 };
