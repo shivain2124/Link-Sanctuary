@@ -6,7 +6,7 @@ import { FolderModel } from "../models/folder.model";
 //create link
 export const createLink = async (req: Request, res: Response) => {
   try {
-    const { title, url, description, folderId } = req.body;
+    const { title, url, description, folderId, tags } = req.body;
     const userId = req.user?.id;
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -32,6 +32,7 @@ export const createLink = async (req: Request, res: Response) => {
       description,
       folderId,
       userId,
+      tags,
     });
     await newLink.save();
 
@@ -103,5 +104,41 @@ export const updateLinks = async (req: Request, res: Response) => {
     return res.status(200).json({ message: "Link updated!", link });
   } catch (err) {
     return res.status(500).json({ message: "Failed to update the link" });
+  }
+};
+
+// tag based filtering
+export const searchLinksByTags = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    const { tags } = req.query;
+
+    if (!tags)
+      return res.status(409).json({ message: "Tags query parameter required" });
+
+    const tagArray = (tags as string)
+      .split(",")
+      .map((t) => t.trim().toLowerCase());
+
+    const links = await LinkModel.find({
+      userId,
+      tags: { $all: tagArray },
+    }).sort({ title: 1 });
+
+    res.json({ success: true, data: links });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to search links" });
+  }
+};
+
+//all unique tags for a user
+export const getUserTags = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    const tags = await LinkModel.distinct("tags", { userId });
+
+    res.json({ success: true, data: tags });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch tags" });
   }
 };
