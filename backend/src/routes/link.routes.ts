@@ -16,7 +16,7 @@ router.use(authenticateToken);
 router.use(requireAuthentication);
 
 router.post("/", validateData(LinkSchema), createLink);
-router.get("/folder/:folderId", getLinks);
+router.get("/folders/:folderId", getLinks);
 router.delete("/:linkId", deleteLinks);
 router.put("/:linkId", updateLinks);
 

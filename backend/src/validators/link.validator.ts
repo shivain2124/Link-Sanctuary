@@ -9,7 +9,7 @@ const LinkSchema = z.object({
 
   description: z.string().optional(),
 
-  parentId: z.string({ error: "Folder is required" }).min(1),
+  folderId: z.string({ error: "Folder is required" }).min(1),
 });
 
 type ILinkSchema = z.infer<typeof LinkSchema>;

@@ -14,7 +14,7 @@ export const createLink = async (req: Request, res: Response) => {
 
     const existingTitle = await LinkModel.findOne({
       title,
-      folderId,
+      folderId: folderId || null,
       userId,
     });
     if (existingTitle)
