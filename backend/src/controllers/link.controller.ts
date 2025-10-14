@@ -106,30 +106,6 @@ export const updateLinks = async (req: Request, res: Response) => {
   }
 };
 
-// tag based filtering
-export const searchLinksByTags = async (req: Request, res: Response) => {
-  try {
-    const userId = req.user!.id;
-    const { tags } = req.query;
-
-    if (!tags)
-      return res.status(409).json({ message: "Tags query parameter required" });
-
-    const tagArray = (tags as string)
-      .split(",")
-      .map((t) => t.trim().toLowerCase());
-
-    const links = await LinkModel.find({
-      userId,
-      tags: { $all: tagArray },
-    }).sort({ title: 1 });
-
-    res.json({ success: true, data: links });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to search links" });
-  }
-};
-
 //all unique tags for a user
 export const getUserTags = async (req: Request, res: Response) => {
   try {
@@ -170,8 +146,46 @@ export const getFavouriteLinks = async (req: Request, res: Response) => {
       isFavourite: true,
     }).sort({ createdAt: -1 });
 
-    res.json({ success: true, links });
+    res.json({ success: true, data: links });
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch favourites" });
+  }
+};
+
+// SEARCH LOGIC
+export const universalSearch = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    const { q, tags, folderId } = req.query;
+
+    const searchQuery: any = { userId };
+
+    //Text search
+    if (q && typeof q === "string" && q.trim()) {
+      searchQuery.$or = [
+        { title: { $regex: q, $options: "i" } },
+        { url: { $regex: q, $options: "i" } },
+        { description: { $regex: q, $options: "i" } },
+        { tags: { $regex: q, $options: "i" } },
+      ];
+    }
+
+    //check box search
+    if (tags && typeof tags === "string") {
+      const tagArray = tags.split(",").map((t) => t.trim());
+      searchQuery.tags = { $all: tagArray };
+    }
+
+    if (folderId) {
+      searchQuery.folderId = folderId;
+    }
+
+    const links = await LinkModel.find(searchQuery)
+      .sort({ createdAt: -1 })
+      .limit(100);
+
+    res.json({ success: true, data: links });
+  } catch (err) {
+    res.status(500).json({ error: "Couldnt search" });
   }
 };
