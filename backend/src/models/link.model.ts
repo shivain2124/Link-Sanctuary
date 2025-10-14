@@ -16,6 +16,12 @@ const linkSchema = new Schema(
       default: "",
     },
     tags: [String],
+
+    isFavourite: {
+      type: Boolean,
+      default: false,
+    },
+
     folderId: {
       type: Schema.Types.ObjectId,
       ref: "Folder",
@@ -32,5 +38,6 @@ const linkSchema = new Schema(
 
 linkSchema.index({ userId: 1, folderId: 1, title: 1 });
 linkSchema.index({ userId: 1, tags: 1 });
+linkSchema.index({ userId: 1, isFavourite: 1 });
 
 export const LinkModel = mongoose.model("Link", linkSchema);

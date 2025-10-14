@@ -12,6 +12,8 @@ const LinkSchema = z.object({
   folderId: z.string({ error: "Folder is required" }).min(1),
 
   tags: z.array(z.string()).optional(),
+
+  isFavourite: z.boolean().optional(),
 });
 
 type ILinkSchema = z.infer<typeof LinkSchema>;

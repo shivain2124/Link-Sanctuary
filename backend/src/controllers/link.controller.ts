@@ -1,5 +1,4 @@
-import { Request, Response, NextFunction } from "express";
-import { connectDB } from "../config/db";
+import { Request, Response } from "express";
 import { LinkModel } from "../models/link.model";
 import { FolderModel } from "../models/folder.model";
 
@@ -140,5 +139,39 @@ export const getUserTags = async (req: Request, res: Response) => {
     res.json({ success: true, data: tags });
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch tags" });
+  }
+};
+
+// mark link as favourite
+export const toggleFavourite = async (req: Request, res: Response) => {
+  try {
+    const { linkId } = req.params;
+    const userId = req.user!.id;
+
+    const link = await LinkModel.findOne({ _id: linkId, userId });
+
+    if (!link) return res.status(404).json({ message: "link not found!" });
+
+    link.isFavourite = !link.isFavourite;
+    await link.save();
+
+    res.status(200).json({ message: "Favourite updated", link });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update favourite" });
+  }
+};
+
+// get favs
+export const getFavouriteLinks = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    const links = await LinkModel.find({
+      userId,
+      isFavourite: true,
+    }).sort({ createdAt: -1 });
+
+    res.json({ success: true, links });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch favourites" });
   }
 };
