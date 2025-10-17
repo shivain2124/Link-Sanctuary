@@ -1,5 +1,5 @@
 import axiosClient from "../api/axios-instance";
-import axios from "axios";
+import { handleApiError } from "../api/handle-error";
 
 export const registerUser = async (username: string, password: string) => {
   try {
@@ -9,9 +9,24 @@ export const registerUser = async (username: string, password: string) => {
     });
     return res.data;
   } catch (err) {
-    if (axios.isAxiosError(err) && err.response) {
-      throw new Error(err.response.data?.message || "Registration failed");
-    }
-    throw new Error("Registration failed");
+    handleApiError(err, "Registration failed");
+  }
+};
+
+export const loginUser = async (username: string, password: string) => {
+  try {
+    const res = await axiosClient.post("/auth/login", { username, password });
+    return res.data;
+  } catch (err) {
+    handleApiError(err, "Login failed");
+  }
+};
+
+export const refreshToken = async () => {
+  try {
+    const res = await axiosClient.post("/auth/refresh");
+    return res.data;
+  } catch (err) {
+    handleApiError(err, "Token refresh failed");
   }
 };
