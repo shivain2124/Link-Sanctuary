@@ -1,11 +1,16 @@
 import axiosClient from "../api/axios-instance";
 import { handleApiError } from "../api/handle-error";
 
-export const registerUser = async (username: string, password: string) => {
+export const registerUser = async (
+  username: string,
+  password: string,
+  confirmPassword: string
+) => {
   try {
     const res = await axiosClient.post("/auth/register", {
       username,
       password,
+      confirmPassword,
     });
     return res.data;
   } catch (err) {

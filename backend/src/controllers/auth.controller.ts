@@ -20,9 +20,9 @@ export const registerController = async (req: Request, res: Response) => {
     const newUser = new UserModel({ username, password: hashedPassword });
     await newUser.save();
 
-    res.status(201).json({ message: "User registered Successfully!" });
+    return res.status(201).json({ message: "User registered Successfully!" });
   } catch (error) {
-    res
+    return res
       .status(500)
       .json({ error: "Internal server error while registering a user" });
   }
@@ -40,7 +40,8 @@ export const loginController = async (req: Request, res: Response) => {
     }
 
     const isValid = await verifyPassword(user.password, password);
-    if (!isValid) res.status(401).json({ message: "Invalid Credentials" });
+    if (!isValid)
+      return res.status(401).json({ message: "Invalid Credentials" });
 
     const accessToken = generateAccessToken(user._id.toString());
     const refreshToken = generateRefreshToken(user._id.toString());
@@ -48,13 +49,16 @@ export const loginController = async (req: Request, res: Response) => {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
       maxAge: 7 * 24 * 3600 * 1000,
+      path: "/",
     });
 
-    res.status(201).json({ message: "Logged in Successfully", accessToken });
+    return res
+      .status(201)
+      .json({ message: "Logged in Successfully", accessToken });
   } catch (err) {
-    res.status(500).json({ error: "Login failed" });
+    return res.status(500).json({ error: "Login failed" });
   }
 };
 

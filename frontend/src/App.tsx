@@ -1,11 +1,17 @@
-import { FolderTree } from "./components/folder/file-tree";
+import { Login } from "./pages/auth/login";
+import { Register } from "./pages/auth/register";
+import { FolderTree } from "../src/components/folder/file-tree";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">LinkSanctuary</h1>
-      <FolderTree />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/" element={<FolderTree />} />
+      </Routes>
+    </Router>
   );
 }
 
