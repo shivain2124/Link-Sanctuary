@@ -9,7 +9,8 @@ export const Login = () => {
     e.preventDefault();
     try {
       // This will set the refreshToken cookie
-      await loginUser(username, password);
+      const response = await loginUser(username, password);
+      localStorage.setItem("accessToken", response.accessToken);
 
       window.location.href = "/";
     } catch (error) {

@@ -33,6 +33,8 @@ export const FolderItem = ({
           getLinkService(_id),
         ]);
 
+        console.log("Fetched folderLinks:", folderLinks);
+
         setLocalChildren(childFolders || []);
         setLocalLinks(folderLinks || []);
         setLoaded(true);
@@ -103,7 +105,8 @@ export const FolderTree = () => {
   useEffect(() => {
     const fetchRootFolders = async () => {
       const rootFolders = await getRootFolders();
-      setFolders(rootFolders || []);
+      console.log("rootFolders", rootFolders);
+      setFolders(rootFolders.data || []);
       setLoading(false);
     };
     fetchRootFolders();

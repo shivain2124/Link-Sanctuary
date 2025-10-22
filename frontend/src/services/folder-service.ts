@@ -22,10 +22,10 @@ export const getRootFolders = async () => {
   }
 };
 
-export const getChildFolders = async (folderId: string) => {
+export const getChildFolders = async (parentId: string) => {
   try {
-    const res = await axiosClient.get(`/folders/${folderId}/children`);
-    return res.data;
+    const res = await axiosClient.get(`/folders/${parentId}/children`);
+    return res.data.data;
   } catch (err) {
     handleApiError(err, "Cannot fetch your folders. Please try again later");
   }

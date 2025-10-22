@@ -25,7 +25,7 @@ export const createLinkService = async (
 export const getLinkService = async (folderId: string) => {
   try {
     const res = await axiosClient.get(`/links/folders/${folderId}`);
-    return res.data;
+    return res.data.data;
   } catch (err) {
     handleApiError(err, "Failed to fetch links.");
   }
