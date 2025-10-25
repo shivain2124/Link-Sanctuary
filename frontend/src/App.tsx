@@ -1,6 +1,8 @@
 import { Login } from "./pages/auth/login";
 import { Register } from "./pages/auth/register";
-import { FolderTree } from "../src/components/folder/file-tree";
+import HomePage from "./pages/home/home"; // your main page
+import Layout from "./pages/layout";
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -9,7 +11,14 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/" element={<FolderTree />} />
+        <Route
+          path="/"
+          element={
+            <Layout>
+              <HomePage />
+            </Layout>
+          }
+        />
       </Routes>
     </Router>
   );
