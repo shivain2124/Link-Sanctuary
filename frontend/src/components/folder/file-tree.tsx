@@ -1,4 +1,11 @@
-import { ExternalLink, FolderClosed, FolderOpen } from "lucide-react";
+import {
+  ExternalLink,
+  FolderClosed,
+  FolderOpen,
+  FolderPlus,
+  Plus,
+  FilePlus2,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import { type FolderType, type LinkType } from "../../types/types";
 import { getChildFolders, getRootFolders } from "../../services/folder-service";
@@ -12,7 +19,7 @@ export interface FolderNode extends FolderType {
 // Recursive FolderItem component
 export const FolderItem = ({
   _id,
-  parentId,
+  // parentId,
   name,
   children = [],
   links = [],
@@ -53,7 +60,7 @@ export const FolderItem = ({
     <li>
       <button
         onClick={handleToggle}
-        className="flex items-center gap-2 p-2 hover:bg-base-300 rounded w-full text-left"
+        className="flex items-center gap-2 p-2 hover:bg-base-300 rounded w-full text-left group"
         disabled={loading}
       >
         {loading ? (
@@ -64,6 +71,16 @@ export const FolderItem = ({
           <FolderClosed className="h-4 w-4" />
         )}
         {name}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <div className="hidden group-hover:flex gap-2 items-center transition-all-300">
+            <FolderPlus className="h-3.5 w-3.5  text-gray-600 hover:bg-blue-100 cursor-pointer" />
+            <FilePlus2 className="h-3.5 w-3.5  text-gray-600 hover:bg-blue-100 cursor-pointer" />
+          </div>
+        </button>
       </button>
 
       {isOpen && hasContent && (
@@ -105,7 +122,7 @@ export const FolderTree = () => {
   useEffect(() => {
     const fetchRootFolders = async () => {
       const rootFolders = await getRootFolders();
-      console.log("rootFolders", rootFolders);
+      // console.log("rootFolders", rootFolders);
       setFolders(rootFolders.data || []);
       setLoading(false);
     };
