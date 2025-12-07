@@ -3,13 +3,14 @@ import {
   FolderClosed,
   FolderOpen,
   FolderPlus,
-  Plus,
   FilePlus2,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { type FolderType, type LinkType } from "../../types/types";
 import { getChildFolders, getRootFolders } from "../../services/folder-service";
 import { getLinkService } from "../../services/link-service";
+import { AddLinkForm } from "../link/add-link-form";
+
 export interface FolderNode extends FolderType {
   children?: FolderNode[];
   links?: LinkType[];
@@ -19,7 +20,6 @@ export interface FolderNode extends FolderType {
 // Recursive FolderItem component
 export const FolderItem = ({
   _id,
-  // parentId,
   name,
   children = [],
   links = [],
@@ -30,6 +30,12 @@ export const FolderItem = ({
   const [localLinks, setLocalLinks] = useState<LinkType[]>(links);
   const [loaded, setLoaded] = useState(isLoaded);
   const [loading, setLoading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+
+  const handleAddLink = (newLink: LinkType) => {
+    setLocalLinks([...localLinks, newLink]);
+    setShowForm(false);
+  };
 
   const handleToggle = async () => {
     if (!isOpen && !loaded) {
@@ -39,8 +45,6 @@ export const FolderItem = ({
           getChildFolders(_id),
           getLinkService(_id),
         ]);
-
-        console.log("Fetched folderLinks:", folderLinks);
 
         setLocalChildren(childFolders || []);
         setLocalLinks(folderLinks || []);
@@ -54,7 +58,8 @@ export const FolderItem = ({
     setIsOpen(!isOpen);
   };
 
-  const hasContent = localChildren.length > 0 || localLinks.length > 0;
+  const hasContent =
+    localChildren.length > 0 || localLinks.length > 0 || showForm;
 
   return (
     <li>
@@ -70,21 +75,46 @@ export const FolderItem = ({
         ) : (
           <FolderClosed className="h-4 w-4" />
         )}
-        {name}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          <div className="hidden group-hover:flex gap-2 items-center transition-all-300">
-            <FolderPlus className="h-3.5 w-3.5  text-gray-600 hover:bg-blue-100 cursor-pointer" />
-            <FilePlus2 className="h-3.5 w-3.5  text-gray-600 hover:bg-blue-100 cursor-pointer" />
-          </div>
-        </button>
+        <span className="flex-1">{name}</span>
+
+        <div className="hidden group-hover:flex gap-1 items-center">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+            className="p-1 hover:bg-blue-100 rounded"
+            title="Add subfolder"
+          >
+            <FolderPlus className="h-3.5 w-3.5 text-gray-600" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!isOpen) setIsOpen(true);
+              setShowForm(true);
+            }}
+            className="p-1 hover:bg-green-100 rounded"
+            title="Add link"
+          >
+            <FilePlus2 className="h-3.5 w-3.5 text-gray-600" />
+          </button>
+        </div>
       </button>
 
       {isOpen && hasContent && (
         <ul className="ml-4">
+          {/* Add Link Form */}
+          {showForm && (
+            <li className="my-2">
+              <AddLinkForm
+                folderId={_id}
+                onSuccess={handleAddLink}
+                onCancel={() => setShowForm(false)}
+              />
+            </li>
+          )}
+
+          {/* Links */}
           {localLinks.map((link) => (
             <li key={link._id}>
               <a
@@ -99,7 +129,7 @@ export const FolderItem = ({
             </li>
           ))}
 
-          {/* recursive function to render children */}
+          {/* Recursive children */}
           {localChildren.map((child) => (
             <FolderItem key={child._id} {...child} />
           ))}
@@ -122,7 +152,6 @@ export const FolderTree = () => {
   useEffect(() => {
     const fetchRootFolders = async () => {
       const rootFolders = await getRootFolders();
-      // console.log("rootFolders", rootFolders);
       setFolders(rootFolders.data || []);
       setLoading(false);
     };
