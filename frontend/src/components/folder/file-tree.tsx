@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 import { type FolderType, type LinkType } from "../../types/types";
 import { getChildFolders, getRootFolders } from "../../services/folder-service";
 import { getLinkService } from "../../services/link-service";
-import { AddLinkForm } from "../link/add-link-form";
+import { AddLinkModal } from "../link/add-link-form";
 
 export interface FolderNode extends FolderType {
   children?: FolderNode[];
@@ -17,7 +17,6 @@ export interface FolderNode extends FolderType {
   isLoaded?: boolean;
 }
 
-// Recursive FolderItem component
 export const FolderItem = ({
   _id,
   name,
@@ -30,11 +29,10 @@ export const FolderItem = ({
   const [localLinks, setLocalLinks] = useState<LinkType[]>(links);
   const [loaded, setLoaded] = useState(isLoaded);
   const [loading, setLoading] = useState(false);
-  const [showForm, setShowForm] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const handleAddLink = (newLink: LinkType) => {
     setLocalLinks([...localLinks, newLink]);
-    setShowForm(false);
   };
 
   const handleToggle = async () => {
@@ -58,90 +56,85 @@ export const FolderItem = ({
     setIsOpen(!isOpen);
   };
 
-  const hasContent =
-    localChildren.length > 0 || localLinks.length > 0 || showForm;
+  const hasContent = localChildren.length > 0 || localLinks.length > 0;
 
   return (
-    <li>
-      <button
-        onClick={handleToggle}
-        className="flex items-center gap-2 p-2 hover:bg-base-300 rounded w-full text-left group"
-        disabled={loading}
-      >
-        {loading ? (
-          <span className="loading loading-spinner loading-xs"></span>
-        ) : isOpen ? (
-          <FolderOpen className="h-4 w-4" />
-        ) : (
-          <FolderClosed className="h-4 w-4" />
-        )}
-        <span className="flex-1">{name}</span>
-
-        <div className="hidden group-hover:flex gap-1 items-center">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-            className="p-1 hover:bg-blue-100 rounded"
-            title="Add subfolder"
-          >
-            <FolderPlus className="h-3.5 w-3.5 text-gray-600" />
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              if (!isOpen) setIsOpen(true);
-              setShowForm(true);
-            }}
-            className="p-1 hover:bg-green-100 rounded"
-            title="Add link"
-          >
-            <FilePlus2 className="h-3.5 w-3.5 text-gray-600" />
-          </button>
-        </div>
-      </button>
-
-      {isOpen && hasContent && (
-        <ul className="ml-4">
-          {/* Add Link Form */}
-          {showForm && (
-            <li className="my-2">
-              <AddLinkForm
-                folderId={_id}
-                onSuccess={handleAddLink}
-                onCancel={() => setShowForm(false)}
-              />
-            </li>
+    <>
+      <li>
+        <button
+          onClick={handleToggle}
+          className="flex items-center gap-2 p-2 hover:bg-base-300 rounded w-full text-left group"
+          disabled={loading}
+        >
+          {loading ? (
+            <span className="loading loading-spinner loading-xs"></span>
+          ) : isOpen ? (
+            <FolderOpen className="h-4 w-4" />
+          ) : (
+            <FolderClosed className="h-4 w-4" />
           )}
+          <span className="flex-1">{name}</span>
 
-          {/* Links */}
-          {localLinks.map((link) => (
-            <li key={link._id}>
-              <a
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 p-2 hover:bg-base-300 rounded"
-              >
-                <ExternalLink className="h-3 w-3 opacity-50" />
-                {link.title}
-              </a>
-            </li>
-          ))}
+          <div className="hidden group-hover:flex gap-1 items-center">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                // TODO: Add folder functionality
+              }}
+              className="p-1 hover:bg-blue-100 rounded"
+              title="Add subfolder"
+            >
+              <FolderPlus className="h-3.5 w-3.5 text-gray-600" />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowModal(true);
+              }}
+              className="p-1 hover:bg-green-100 rounded"
+              title="Add link"
+            >
+              <FilePlus2 className="h-3.5 w-3.5 text-gray-600" />
+            </button>
+          </div>
+        </button>
 
-          {/* Recursive children */}
-          {localChildren.map((child) => (
-            <FolderItem key={child._id} {...child} />
-          ))}
-        </ul>
-      )}
+        {isOpen && hasContent && (
+          <ul className="ml-4">
+            {localLinks.map((link) => (
+              <li key={link._id}>
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 p-2 hover:bg-base-300 rounded"
+                >
+                  <ExternalLink className="h-3 w-3 opacity-50" />
+                  {link.title}
+                </a>
+              </li>
+            ))}
 
-      {isOpen && !loading && !hasContent && (
-        <div className="ml-6 p-2 text-sm text-base-content/50">
-          Empty folder
-        </div>
-      )}
-    </li>
+            {localChildren.map((child) => (
+              <FolderItem key={child._id} {...child} />
+            ))}
+          </ul>
+        )}
+
+        {isOpen && !loading && !hasContent && (
+          <div className="ml-6 p-2 text-sm text-base-content/50">
+            Empty folder
+          </div>
+        )}
+      </li>
+
+      <AddLinkModal
+        folderId={_id}
+        isOpen={showModal}
+        onSuccess={handleAddLink}
+        onClose={() => setShowModal(false)}
+      />
+    </>
   );
 };
 
