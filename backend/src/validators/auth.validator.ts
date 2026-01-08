@@ -1,31 +1,31 @@
-// schema-based form validation
-import { z } from "zod";
+// // schema-based form validation
+// import { z } from "zod";
 
-const SignUpSchema = z
-  .object({
-    username: z
-      .string()
-      .trim()
-      .min(3, { error: "Username must not be lesser than 3 characters" })
-      .max(25, { error: "Username must not be greater than 25 characters" }),
+// const SignUpSchema = z
+//   .object({
+//     username: z
+//       .string()
+//       .trim()
+//       .min(3, { error: "Username must not be lesser than 3 characters" })
+//       .max(25, { error: "Username must not be greater than 25 characters" }),
 
-    password: z.string().min(4, { error: "Password should be longer" }),
+//     password: z.string().min(4, { error: "Password should be longer" }),
 
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
+//     confirmPassword: z.string(),
+//   })
+//   .refine((data) => data.password === data.confirmPassword, {
+//     message: "Passwords don't match",
+//     path: ["confirmPassword"],
+//   });
 
-type ISignUpSchema = z.infer<typeof SignUpSchema>;
+// type ISignUpSchema = z.infer<typeof SignUpSchema>;
 
-const LoginSchema = z.object({
-  username: z.string().min(1, { error: "Field cannot be empty" }),
-  password: z.string().min(1, { error: "Field cannot be empty" }),
-});
+// const LoginSchema = z.object({
+//   username: z.string().min(1, { error: "Field cannot be empty" }),
+//   password: z.string().min(1, { error: "Field cannot be empty" }),
+// });
 
-type ILoginSchema = z.infer<typeof LoginSchema>;
+// type ILoginSchema = z.infer<typeof LoginSchema>;
 
-export { SignUpSchema, LoginSchema };
-export type { ISignUpSchema, ILoginSchema };
+// export { SignUpSchema, LoginSchema };
+// export type { ISignUpSchema, ILoginSchema };

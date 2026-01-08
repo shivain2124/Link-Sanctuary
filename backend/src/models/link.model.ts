@@ -28,9 +28,9 @@ const linkSchema = new Schema(
       required: true,
     },
     userId: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
+      type: String,
       required: true,
+      index: true,
     },
   },
   { timestamps: true }

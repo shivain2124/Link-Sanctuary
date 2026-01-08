@@ -1,10 +1,10 @@
 import express from "express";
-import cookieParser from "cookie-parser";
 import { connectDB } from "./config/db";
-import authRoutes from "./routes/auth.routes";
+import { clerkMiddleware } from "@clerk/express";
 import folderRoutes from "./routes/folder.routes";
 import linkRoutes from "./routes/link.routes";
 import cors from "cors";
+import { clerkWebhookHandler } from "./controllers/webhook.controller";
 
 const app = express();
 
@@ -15,12 +15,12 @@ app.use(
   })
 );
 
+app.post("/api/webhooks/clerk", express.json(), clerkWebhookHandler);
 app.use(express.json());
-app.use(cookieParser());
+app.use(clerkMiddleware());
 
 connectDB();
 
-app.use("/api/auth", authRoutes);
 app.use("/api/folders", folderRoutes);
 app.use("/api/links", linkRoutes);
 

@@ -1,19 +1,15 @@
 import { Request, Response } from "express";
 import { FolderModel } from "../models/folder.model";
-import { connectDB } from "../config/db";
-import { CreateFolderSchema } from "../validators/folder.validator";
-import { z } from "zod";
 
 // create new folder
 export const CreateFolderController = async (req: Request, res: Response) => {
   try {
     const { name, parentId } = req.body;
-    const userId = req.user?.id;
+    const { userId } = (req as any).auth;
+
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-
-    await connectDB();
 
     const existingFolder = await FolderModel.findOne({
       name,
@@ -49,7 +45,7 @@ export const CreateFolderController = async (req: Request, res: Response) => {
 // get all root folders
 export const getRootFolders = async (req: Request, res: Response) => {
   try {
-    const userId = req.user?.id;
+    const { userId } = (req as any).auth;
 
     const folders = await FolderModel.find({ userId, parentId: null }).sort({
       name: 1,
@@ -65,7 +61,7 @@ export const getRootFolders = async (req: Request, res: Response) => {
 export const getChildFolders = async (req: Request, res: Response) => {
   try {
     const { folderId } = req.params;
-    const userId = req.user?.id;
+    const { userId } = (req as any).auth;
 
     const children = await FolderModel.find({
       userId,
@@ -81,7 +77,6 @@ export const getChildFolders = async (req: Request, res: Response) => {
 };
 
 //delete folder and all its children
-// have to optimise
 export const deleteFolderRecursively = async (
   folderId: string,
   userId: string
@@ -96,7 +91,7 @@ export const deleteFolderRecursively = async (
 
 export const deleteFolder = async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.id;
+    const { userId } = (req as any).auth;
     const { folderId } = req.params;
 
     await deleteFolderRecursively(folderId, userId);

@@ -1,8 +1,7 @@
 import { Router } from "express";
 import { validateData } from "../middleware/validator.middleware";
-import { authenticateToken } from "../middleware/jwt.middleware";
+import { clerkMiddleware, requireAuth } from "@clerk/express";
 import { CreateFolderSchema } from "../validators/folder.validator";
-import requireAuthentication from "../middleware/requireAuth.middleware";
 import {
   CreateFolderController,
   getRootFolders,
@@ -12,8 +11,8 @@ import {
 
 const router = Router();
 
-router.use(authenticateToken);
-router.use(requireAuthentication);
+router.use(clerkMiddleware());
+router.use(requireAuth());
 
 router.post("/", validateData(CreateFolderSchema), CreateFolderController);
 router.get("/root", getRootFolders);
