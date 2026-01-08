@@ -13,6 +13,9 @@ import { getChildFolders, getRootFolders } from "../../services/folder-service";
 import { getLinkService } from "../../services/link-service";
 import { AddLinkModal } from "../link/add-link-form";
 import { AddFolderModal } from "../folder/add-folder-modal";
+import { Trash2 } from "lucide-react";
+import { deleteFolder } from "../../services/folder-service";
+import toast from "react-hot-toast";
 
 export interface FolderNode extends FolderType {
   children?: FolderNode[];
@@ -59,6 +62,23 @@ export const FolderItem = ({
   const handleAddSubfolder = (newFolder: FolderNode) => {
     setLocalChildren((prev) => [...prev, newFolder]);
     setIsOpen(true);
+  };
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (
+      window.confirm(
+        `Are you sure you want to delete "${name}" and all its contents?`
+      )
+    ) {
+      try {
+        await deleteFolder(_id);
+        toast.success("Folder deleted");
+        window.location.reload();
+      } catch (err) {
+        toast.error("Failed to delete folder");
+      }
+    }
   };
 
   return (
@@ -108,6 +128,14 @@ export const FolderItem = ({
             title="Add subfolder"
           >
             <FolderPlus className="h-3.5 w-3.5" />
+          </button>
+
+          <button
+            onClick={handleDelete}
+            className="btn btn-ghost btn-xs btn-square hover:text-error"
+            title="Delete folder"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>
