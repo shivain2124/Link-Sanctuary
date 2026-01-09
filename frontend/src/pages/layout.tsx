@@ -1,25 +1,7 @@
-// import { FolderTree } from "../components/folder/file-tree";
-
-// interface LayoutProps {
-//   children: React.ReactNode;
-// }
-
-// export default function Layout({ children }: LayoutProps) {
-//   return (
-//     <div className="flex h-screen">
-//       <aside className="w-72 shrink-0 border-r border-base-300 bg-base-200 overflow-y-auto">
-//         <div className="p-2">
-//           <FolderTree />
-//         </div>
-//       </aside>
-
-//       <main className="flex-1 overflow-y-auto">{children}</main>
-//     </div>
-//   );
-// }
 import { FolderPlus, Settings } from "lucide-react";
 import { FolderTree } from "../components/folder/file-tree";
-import { UserButton } from "@clerk/clerk-react"; 
+import { UserButton } from "@clerk/clerk-react";
+import { TagSidebar } from "../components/tags/tag-list";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -37,6 +19,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {/* Scrollable Tree Area */}
         <div className="flex-1 overflow-y-auto p-2 custom-scrollbar">
           <FolderTree />
+          <TagSidebar />
         </div>
 
         {/* Sidebar Footer (User Settings) */}

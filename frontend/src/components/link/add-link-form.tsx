@@ -1,6 +1,9 @@
-import { useState } from "react";
-import { X, Plus } from "lucide-react";
-import { createLinkService } from "../../services/link-service";
+import { useState, useEffect } from "react";
+import { X, Plus, Save } from "lucide-react";
+import {
+  createLinkService,
+  updateLinkService,
+} from "../../services/link-service";
 import type { LinkType } from "../../types/types";
 import toast from "react-hot-toast";
 
@@ -9,6 +12,7 @@ interface AddLinkModalProps {
   isOpen: boolean;
   onSuccess: (link: LinkType) => void;
   onClose: () => void;
+  initialData?: LinkType | null;
 }
 
 export const AddLinkModal = ({
@@ -16,6 +20,7 @@ export const AddLinkModal = ({
   isOpen,
   onSuccess,
   onClose,
+  initialData,
 }: AddLinkModalProps) => {
   const [formData, setFormData] = useState({
     title: "",
@@ -24,6 +29,20 @@ export const AddLinkModal = ({
     tags: "",
   });
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        title: initialData.title,
+        url: initialData.url,
+        description: initialData.description || "",
+        tags: initialData.tags?.join(", ") || "",
+      });
+    } else {
+      // Clear form if adding new
+      setFormData({ title: "", url: "", description: "", tags: "" });
+    }
+  }, [initialData, isOpen]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -35,13 +54,7 @@ export const AddLinkModal = ({
     e.preventDefault();
 
     if (!formData.title.trim() || !formData.url.trim()) {
-      toast.error("Title and URL are required");
-      return;
-    }
-
-    let url = formData.url.trim();
-    if (!url.startsWith("http://") && !url.startsWith("https://")) {
-      url = "https://" + url;
+      return toast.error("Title and URL are required");
     }
 
     setLoading(true);
@@ -51,39 +64,33 @@ export const AddLinkModal = ({
         .map((t) => t.trim())
         .filter(Boolean);
 
-      const result = await createLinkService(
-        formData.title.trim(),
-        url,
-        formData.description.trim(),
-        folderId,
-        tagsArray
-      );
-
-      const newLink = result?.link || result?.data || result;
-
-      if (newLink && newLink._id) {
-        onSuccess(newLink);
-        setFormData({ title: "", url: "", description: "", tags: "" });
-        onClose();
-        toast.success("Link added successfully! ✓");
+      let result;
+      if (initialData) {
+        // EDIT MODE
+        result = await updateLinkService(initialData._id, {
+          title: formData.title.trim(),
+          url: formData.url.trim(),
+          description: formData.description.trim(),
+          tags: tagsArray,
+        });
+        toast.success("Link updated! ✓");
       } else {
-        throw new Error("Failed to add link");
+        // ADD MODE
+        result = await createLinkService(
+          formData.title.trim(),
+          formData.url.trim(),
+          formData.description.trim(),
+          folderId,
+          tagsArray
+        );
+        toast.success("Link added! ✓");
       }
+
+      const updatedLink = result?.link || result?.data || result;
+      onSuccess(updatedLink);
+      onClose();
     } catch (error: any) {
-      console.error("Error adding link:", error);
-
-      const errorMsg = error.message || "Failed to add link";
-
-      if (
-        errorMsg.includes("already taken") ||
-        errorMsg.includes("Name already taken")
-      ) {
-        toast.error("Link with this title already exists in this folder");
-      } else if (errorMsg.includes("duplicate")) {
-        toast.error("This link already exists");
-      } else {
-        toast.error(errorMsg);
-      }
+      toast.error(error.message || "Operation failed");
     } finally {
       setLoading(false);
     }
@@ -93,18 +100,17 @@ export const AddLinkModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-base-100 rounded-lg p-6 w-full max-w-md mx-4">
-        <h2 className="text-xl font-bold mb-4">Add Link</h2>
+      <div className="bg-base-100 rounded-lg p-6 w-full max-w-md mx-4 shadow-2xl">
+        <h2 className="text-xl font-bold mb-4">
+          {initialData ? "Edit Link" : "Add New Link"}
+        </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="label">
-              <span className="label-text">Title *</span>
-            </label>
+            <label className="label-text block mb-1">Title *</label>
             <input
               type="text"
               name="title"
-              placeholder="Link title"
               value={formData.title}
               onChange={handleChange}
               className="input input-bordered w-full"
@@ -114,13 +120,10 @@ export const AddLinkModal = ({
           </div>
 
           <div>
-            <label className="label">
-              <span className="label-text">URL *</span>
-            </label>
+            <label className="label-text block mb-1">URL *</label>
             <input
               type="text"
               name="url"
-              placeholder="https://example.com"
               value={formData.url}
               onChange={handleChange}
               className="input input-bordered w-full"
@@ -129,28 +132,24 @@ export const AddLinkModal = ({
           </div>
 
           <div>
-            <label className="label">
-              <span className="label-text">Description</span>
-            </label>
+            <label className="label-text block mb-1">Description</label>
             <textarea
               name="description"
-              placeholder="Optional description"
               value={formData.description}
               onChange={handleChange}
               className="textarea textarea-bordered w-full"
-              rows={3}
               disabled={loading}
             />
           </div>
 
           <div>
-            <label className="label">
-              <span className="label-text">Tags</span>
+            <label className="label-text block mb-1">
+              Tags (comma separated)
             </label>
             <input
               type="text"
               name="tags"
-              placeholder="react, coding, tutorial"
+              placeholder="coding, react, news"
               value={formData.tags}
               onChange={handleChange}
               className="input input-bordered w-full"
@@ -165,7 +164,6 @@ export const AddLinkModal = ({
               className="btn btn-ghost"
               disabled={loading}
             >
-              <X className="h-4 w-4" />
               Cancel
             </button>
             <button
@@ -173,8 +171,12 @@ export const AddLinkModal = ({
               className="btn btn-primary"
               disabled={loading}
             >
-              <Plus className="h-4 w-4" />
-              {loading ? "Adding..." : "Add Link"}
+              {initialData ? (
+                <Save className="h-4 w-4 mr-2" />
+              ) : (
+                <Plus className="h-4 w-4 mr-2" />
+              )}
+              {loading ? "Saving..." : initialData ? "Update Link" : "Add Link"}
             </button>
           </div>
         </form>
