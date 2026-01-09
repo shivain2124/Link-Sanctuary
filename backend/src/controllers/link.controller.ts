@@ -6,7 +6,7 @@ import { FolderModel } from "../models/folder.model";
 export const createLink = async (req: Request, res: Response) => {
   try {
     const { title, url, description, folderId, tags } = req.body;
-    const { userId } = (req as any).auth;
+    const { userId } = (req as any).auth();
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -47,7 +47,7 @@ export const createLink = async (req: Request, res: Response) => {
 export const getLinks = async (req: Request, res: Response) => {
   try {
     const { folderId } = req.params;
-    const { userId } = (req as any).auth;
+    const { userId } = (req as any).auth();
 
     const links = await LinkModel.find({
       userId,
@@ -64,7 +64,7 @@ export const getLinks = async (req: Request, res: Response) => {
 export const deleteLinks = async (req: Request, res: Response) => {
   try {
     const { linkId } = req.params;
-    const { userId } = (req as any).auth;
+    const { userId } = (req as any).auth();
 
     const result = await LinkModel.findOneAndDelete({ _id: linkId, userId });
 
@@ -80,7 +80,7 @@ export const deleteLinks = async (req: Request, res: Response) => {
 export const updateLinks = async (req: Request, res: Response) => {
   try {
     const { linkId } = req.params;
-    const { userId } = (req as any).auth;
+    const { userId } = (req as any).auth();
     const updates = req.body;
 
     const link = await LinkModel.findOne({ _id: linkId, userId });
@@ -109,7 +109,7 @@ export const updateLinks = async (req: Request, res: Response) => {
 //all unique tags for a user
 export const getUserTags = async (req: Request, res: Response) => {
   try {
-    const { userId } = (req as any).auth;
+    const { userId } = (req as any).auth();
     const tags = await LinkModel.distinct("tags", { userId });
 
     res.json({ success: true, data: tags });
@@ -122,7 +122,7 @@ export const getUserTags = async (req: Request, res: Response) => {
 export const toggleFavourite = async (req: Request, res: Response) => {
   try {
     const { linkId } = req.params;
-    const { userId } = (req as any).auth;
+    const { userId } = (req as any).auth();
 
     const link = await LinkModel.findOne({ _id: linkId, userId });
 
@@ -140,7 +140,7 @@ export const toggleFavourite = async (req: Request, res: Response) => {
 // get favs
 export const getFavouriteLinks = async (req: Request, res: Response) => {
   try {
-    const { userId } = (req as any).auth;
+    const { userId } = (req as any).auth();
     const links = await LinkModel.find({
       userId,
       isFavourite: true,
@@ -155,7 +155,7 @@ export const getFavouriteLinks = async (req: Request, res: Response) => {
 // SEARCH LOGIC
 export const universalSearch = async (req: Request, res: Response) => {
   try {
-    const { userId } = (req as any).auth;
+    const { userId } = (req as any).auth();
     const { q, tags, folderId } = req.query;
 
     const searchQuery: any = { userId };

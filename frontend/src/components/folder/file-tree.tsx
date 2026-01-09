@@ -16,6 +16,7 @@ import { AddFolderModal } from "../folder/add-folder-modal";
 import { Trash2 } from "lucide-react";
 import { deleteFolder } from "../../services/folder-service";
 import toast from "react-hot-toast";
+import {useFolder} from "../../context/folder-context"
 
 export interface FolderNode extends FolderType {
   children?: FolderNode[];
@@ -37,6 +38,7 @@ export const FolderItem = ({
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showFolderModal, setShowFolderModal] = useState(false);
+  const { activeFolderId, setActiveFolderId } = useFolder();
 
   const handleToggle = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -81,6 +83,11 @@ export const FolderItem = ({
     }
   };
 
+  const handleSelect = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveFolderId(_id);
+  };
+
   return (
     <li className="list-none">
       <div className="group flex items-center justify-between p-1.5 hover:bg-base-300 rounded-lg cursor-pointer transition-colors">
@@ -104,7 +111,12 @@ export const FolderItem = ({
             <FolderClosed className="h-4 w-4 text-primary" />
           )}
 
-          <span className="truncate text-sm font-medium">{name}</span>
+          <span
+            className={`truncate text-sm font-medium cursor-pointer hover:text-primary ${activeFolderId === _id ? "text-primary font-bold" : ""}`}
+            onClick={handleSelect}
+          >
+            {name}
+          </span>
         </div>
 
         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">

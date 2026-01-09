@@ -5,7 +5,7 @@ import { FolderModel } from "../models/folder.model";
 export const CreateFolderController = async (req: Request, res: Response) => {
   try {
     const { name, parentId } = req.body;
-    const { userId } = (req as any).auth;
+    const { userId } = (req as any).auth();
 
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -45,7 +45,7 @@ export const CreateFolderController = async (req: Request, res: Response) => {
 // get all root folders
 export const getRootFolders = async (req: Request, res: Response) => {
   try {
-    const { userId } = (req as any).auth;
+    const { userId } = (req as any).auth();
 
     const folders = await FolderModel.find({ userId, parentId: null }).sort({
       name: 1,
@@ -61,7 +61,7 @@ export const getRootFolders = async (req: Request, res: Response) => {
 export const getChildFolders = async (req: Request, res: Response) => {
   try {
     const { folderId } = req.params;
-    const { userId } = (req as any).auth;
+    const { userId } = (req as any).auth();
 
     const children = await FolderModel.find({
       userId,
@@ -91,7 +91,7 @@ export const deleteFolderRecursively = async (
 
 export const deleteFolder = async (req: Request, res: Response) => {
   try {
-    const { userId } = (req as any).auth;
+    const { userId } = (req as any).auth();
     const { folderId } = req.params;
 
     await deleteFolderRecursively(folderId, userId);

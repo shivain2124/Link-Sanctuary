@@ -1,9 +1,10 @@
 import Layout from "../layout";
+import { FolderDashboard } from "../../components/folder/folder-dashboard";
 
 export default function HomePage() {
   return (
     <Layout>
-      <div className="p-6">Welcome! Select a folder on the left.</div>
+      <FolderDashboard />
     </Layout>
   );
 }
