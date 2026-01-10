@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-import type { StringValue } from "ms";
 
 dotenv.config();
 
@@ -8,11 +7,9 @@ const config: Config = {
   nodeEnv: process.env.NODE_ENV || "development",
   mongoUri: process.env.MONGO_URI || "mongodb://127.0.0.1/test",
 
-  jwt: {
-    accessSecret: process.env.JWT_ACCESS_SECRET!,
-    refreshSecret: process.env.JWT_REFRESH_SECRET!,
-    accessExpiry: "45m" as StringValue,
-    refreshExpiry: "7d" as StringValue,
+  clerk: {
+    publishableKey: process.env.CLERK_PUBLISHABLE_KEY!,
+    secretKey: process.env.CLERK_SECRET_KEY!,
   },
 };
 export default config;
@@ -21,11 +18,9 @@ interface Config {
   port: Number;
   nodeEnv: string;
   mongoUri: string;
-  jwt: JwtConfig;
+  clerk: ClerkConfig;
 }
-interface JwtConfig {
-  accessSecret: string;
-  refreshSecret: string;
-  accessExpiry: StringValue;
-  refreshExpiry: StringValue;
+interface ClerkConfig {
+  publishableKey: string;
+  secretKey: string;
 }

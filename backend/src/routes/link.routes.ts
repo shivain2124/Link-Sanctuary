@@ -10,14 +10,13 @@ import {
   universalSearch,
 } from "../controllers/link.controller";
 import { LinkSchema } from "../validators/link.validator";
-import { authenticateToken } from "../middleware/jwt.middleware";
-import requireAuthentication from "../middleware/requireAuth.middleware";
+import { clerkMiddleware, requireAuth } from "@clerk/express";
 import { validateData } from "../middleware/validator.middleware";
 
 const router = Router();
 
-router.use(authenticateToken);
-router.use(requireAuthentication);
+router.use(clerkMiddleware());
+router.use(requireAuth());
 
 router.post("/", validateData(LinkSchema), createLink); //create a link
 router.get("/search", universalSearch); // universal search

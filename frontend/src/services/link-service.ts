@@ -94,6 +94,7 @@ export const searchService = async (universalSearch: {
   q?: string;
   tags?: string;
   folderId?: string;
+  isFavourite?: boolean;
 }) => {
   try {
     const res = await axiosClient.get("/links/search", {

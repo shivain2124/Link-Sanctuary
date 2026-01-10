@@ -13,9 +13,9 @@ const folderSchema = new Schema(
       default: null,
     },
     userId: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
+      type: String,
       required: true,
+      index: true,
     },
   },
   { timestamps: true }
