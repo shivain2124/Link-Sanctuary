@@ -109,7 +109,7 @@ export const FolderItem = ({
 
         <span className="flex-1 truncate text-sm font-medium">{name}</span>
 
-        <div className="flex opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex  group-hover:opacity-100 transition-opacity">
           <button
             onClick={(e) => {
               e.stopPropagation();

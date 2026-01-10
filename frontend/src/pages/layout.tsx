@@ -1,4 +1,4 @@
-import { FolderPlus, Settings } from "lucide-react";
+import { FolderPlus, Settings, Link } from "lucide-react";
 import { FolderTree } from "../components/folder/file-tree";
 import { UserButton } from "@clerk/clerk-react";
 import { TagSidebar } from "../components/tags/tag-list";
@@ -10,9 +10,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <aside className="w-72 shrink-0 border-r border-base-300 bg-base-200/50 flex flex-col">
         {/* Sidebar Header */}
         <div className="p-4 border-b border-base-300 flex items-center justify-between">
-          <h1 className="font-bold text-lg tracking-tight">MyVault</h1>
+          <h1 className="font-bold text-lg tracking-tight">My Sanctuary</h1>
           <button className="btn btn-circle btn-ghost btn-sm">
-            <FolderPlus className="h-5 w-5" />
+            <Link className="h-5 w-5" />
           </button>
         </div>
 

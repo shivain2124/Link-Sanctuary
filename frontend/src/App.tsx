@@ -50,8 +50,8 @@ function App() {
       <Router>
         <SignedIn>
           <header className="p-4 flex justify-between items-center bg-base-200 border-b border-base-300">
-            <h1 className="text-xl font-bold hidden md:block">
-              Link Sanctuary
+            <h1 className="text-xl  text-gray-700 font-bold hidden md:block">
+              LINK SANCTUARY
             </h1>
             <GlobalSearch />
             <UserButton />
